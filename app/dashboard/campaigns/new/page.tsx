@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/app/lib/supabase/client";
 import { GENRES } from "@/app/lib/types";
@@ -10,7 +9,6 @@ const inputCls =
   "mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
 
 export default function NewCampaignPage() {
-  const router = useRouter();
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [description, setDescription] = useState("");
@@ -56,22 +54,33 @@ export default function NewCampaignPage() {
       if (coverFile) coverUrl = await uploadFile(supabase, "covers", coverFile);
       if (bookFile) bookFileUrl = await uploadFile(supabase, "books", bookFile);
 
-      const { error: insertError } = await supabase.from("campaigns").insert({
-        author_id: user.id,
-        title,
-        author_name: authorName,
-        description,
-        genre,
-        cover_url: coverUrl,
-        book_file_url: bookFileUrl,
-        start_date: startDate || null,
-        end_date: endDate || null,
-        max_readers: maxReaders,
-      });
+      const { data: created, error: insertError } = await supabase
+        .from("campaigns")
+        .insert({
+          author_id: user.id,
+          title,
+          author_name: authorName,
+          description,
+          genre,
+          cover_url: coverUrl,
+          book_file_url: bookFileUrl,
+          start_date: startDate || null,
+          end_date: endDate || null,
+          max_readers: maxReaders,
+        })
+        .select("id")
+        .single();
       if (insertError) throw new Error(insertError.message);
 
-      router.push("/dashboard");
-      router.refresh();
+      // Launch checkout: $29 one-time per campaign
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: created.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not start checkout.");
+      window.location.href = data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setLoading(false);
@@ -213,12 +222,16 @@ export default function NewCampaignPage() {
             </p>
           )}
 
+          <p className="text-center text-xs text-zinc-500">
+            $29 one-time per campaign. No subscription.
+          </p>
+
           <button
             type="submit"
             disabled={loading}
             className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
           >
-            {loading ? "Creating campaign…" : "Create campaign"}
+            {loading ? "Creating campaign…" : "Create campaign — $29"}
           </button>
         </form>
       </main>

@@ -19,6 +19,11 @@ export default async function CampaignPage({
   if (!data) notFound();
   const campaign = data as Campaign;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAuthor = user?.id === campaign.author_id;
+
   const { count: approvedCount } = await supabase
     .from("signups")
     .select("id", { count: "exact", head: true })
@@ -97,7 +102,32 @@ export default async function CampaignPage({
             </p>
 
             <div className="mt-8">
-              {spotsLeft > 0 ? (
+              {!campaign.is_paid ? (
+                isAuthor ? (
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center">
+                    <p className="text-sm font-semibold text-amber-900">
+                      This campaign is a draft — readers see a &ldquo;coming
+                      soon&rdquo; page until you launch it.
+                    </p>
+                    <Link
+                      href="/dashboard"
+                      className="mt-4 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                    >
+                      Pay $29 to launch
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center">
+                    <p className="font-semibold text-zinc-900">
+                      This campaign isn&apos;t live yet
+                    </p>
+                    <p className="mt-2 text-sm text-zinc-600">
+                      The author hasn&apos;t opened reviewer signups. Check
+                      back soon!
+                    </p>
+                  </div>
+                )
+              ) : spotsLeft > 0 ? (
                 <ReaderSignupForm campaignId={campaign.id} />
               ) : (
                 <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600">

@@ -21,6 +21,9 @@ export interface Campaign {
   start_date: string | null;
   end_date: string | null;
   max_readers: number;
+  is_paid: boolean;
+  stripe_checkout_session_id: string | null;
+  paid_at: string | null;
   created_at: string;
 }
 

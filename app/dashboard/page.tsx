@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
 import CopyLinkButton from "./CopyLinkButton";
+import PayButton from "./PayButton";
 import type { Campaign, Signup } from "@/app/lib/types";
 
 async function signOut() {
@@ -129,14 +130,25 @@ export default async function DashboardPage() {
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h2 className="truncate font-semibold">{c.title}</h2>
+                      <div className="flex items-center gap-2">
+                        <h2 className="truncate font-semibold">{c.title}</h2>
+                        {c.is_paid ? (
+                          <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-800">
+                            Live
+                          </span>
+                        ) : (
+                          <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                            Draft — payment pending
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-zinc-500">{c.genre}</p>
                       <p className="mt-1 text-xs text-zinc-500">
                         {stat.total} signups · {stat.approved} approved
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     <Link
                       href={`/c/${c.id}`}
                       className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-zinc-400"
@@ -144,6 +156,7 @@ export default async function DashboardPage() {
                       View public page
                     </Link>
                     <CopyLinkButton campaignId={c.id} />
+                    {!c.is_paid && <PayButton campaignId={c.id} />}
                   </div>
                 </div>
               );

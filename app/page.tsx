@@ -109,6 +109,37 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Pricing */}
+        <section className="border-t border-zinc-100 py-16">
+          <h2 className="text-center text-3xl font-bold tracking-tight">
+            Simple pricing
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-zinc-600">
+            One campaign, one price. Launch as many books as you want — you
+            only pay when a campaign goes live.
+          </p>
+          <div className="mx-auto mt-10 max-w-md rounded-3xl border-2 border-indigo-600 bg-white p-8 text-center shadow-lg">
+            <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+              Per campaign
+            </p>
+            <p className="mt-2 text-5xl font-bold tracking-tight">$29</p>
+            <p className="mt-1 text-sm text-zinc-500">one-time · no subscription</p>
+            <ul className="mt-6 space-y-2 text-left text-sm text-zinc-700">
+              <li>✓ Public signup page for your book</li>
+              <li>✓ Unlimited reviewer signups</li>
+              <li>✓ One-click approvals</li>
+              <li>✓ Review tracking dashboard</li>
+              <li>✓ Secure manuscript delivery</li>
+            </ul>
+            <Link
+              href="/signup"
+              className="mt-8 block rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-700"
+            >
+              Start your first campaign
+            </Link>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section className="border-t border-zinc-100 py-16">
           <h2 className="text-center text-3xl font-bold tracking-tight">FAQ</h2>

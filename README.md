@@ -28,16 +28,36 @@ campaign pages with reader signup.
    policies.
 
 3. **Environment variables** — copy the example and fill in your project values
-   (Project Settings → API in the Supabase dashboard):
+   (Project Settings → API in the Supabase dashboard, API keys in the
+   [Stripe dashboard](https://dashboard.stripe.com/apikeys)):
    ```bash
    cp .env.example .env.local
    ```
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+   STRIPE_SECRET_KEY=sk_test_your-key-here
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your-key-here
+   STRIPE_WEBHOOK_SECRET=whsec_your-secret-here
    ```
+   Use Stripe **test** keys while developing.
 
-4. **Run the dev server**
+4. **Apply the payments migration** — run
+   `supabase/migrations/20261007000001_campaign_payments.sql` in the Supabase
+   SQL editor (it adds `is_paid`, `stripe_checkout_session_id`, and `paid_at`
+   to `campaigns`).
+
+5. **Point Stripe at your webhook** — in the Stripe dashboard go to
+   Developers → Webhooks → Add endpoint:
+   - URL: `https://<your-vercel-url>/api/stripe/webhook`
+   - Events: `checkout.session.completed`
+   - Copy the endpoint's **signing secret** into `STRIPE_WEBHOOK_SECRET`.
+
+   No Stripe product needs to be created in the dashboard: checkout uses
+   inline `price_data` ($29 USD, one-time, "ARC Desk campaign launch").
+
+6. **Run the dev server**
    ```bash
    npm run dev
    ```
