@@ -27,11 +27,11 @@ export default async function DashboardPage() {
 
   const { data: campaigns } = await supabase
     .from("campaigns")
-    .select("*")
+    .select("id, author_id, title, author_name, description, genre, cover_url, start_date, end_date, max_readers, is_paid, created_at")
     .eq("author_id", user.id)
     .order("created_at", { ascending: false });
 
-  const list: Campaign[] = campaigns ?? [];
+  const list = (campaigns ?? []) as unknown as Campaign[];
 
   // Signup counts per campaign
   const counts: Record<string, { total: number; approved: number }> = {};

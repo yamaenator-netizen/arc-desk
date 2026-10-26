@@ -12,7 +12,7 @@ export default async function CampaignPage({
   const supabase = createClient();
   const { data } = await supabase
     .from("campaigns")
-    .select("*")
+    .select("id, author_id, title, author_name, description, genre, cover_url, start_date, end_date, max_readers, is_paid, created_at")
     .eq("id", params.id)
     .single();
 
